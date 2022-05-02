@@ -1,0 +1,27 @@
+server:
+  port: ${SERVER_PORT:8080}
+  compression:
+    enabled: true
+  servlet:
+    context-path: ${SERVER_CONTEXT:/api}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DATABASE_HOST:127.0.0.1}:${DATABASE_PORT:5432}/${DATABASE_NAME:taxonhub}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: ${DATABASE_VENDOR_DRIVER:org.postgresql.Driver}
+    initialization-mode: embedded
+    
+jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: false
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: com.eng.taxonhub.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        use_sql_comments: false
+        connection.charSet: UTF-8
+        types.print.banner: false
