@@ -25,7 +25,7 @@ public class CsvEntradaBuscaTaxonomica implements Persistable<UUID> {
 	@Column(name = "id", updatable = false, nullable = false)
 	private UUID id;
 	
-	@Column(name = "species_names", updatable = true, nullable = false)
+	@Column(name = "species_names", updatable = true, nullable = true)
 	private List<String> speciesNames;
 
 	@Override
