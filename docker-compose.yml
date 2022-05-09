@@ -31,7 +31,7 @@ services:
     networks:
       - taxonhub_network
     ports:
-      - 5436:5432
+      - 5432:5432
     environment:
       - POSTGRES_DB=taxonhub
       - POSTGRES_USER=postgres
