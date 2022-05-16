@@ -23,5 +23,5 @@ public class TaxonomicaController {
 	public ResponseEntity<String> verifyVersion() throws Exception {
 		return ResponseEntity.ok(taxonomicaService.VerifyVersion());
 	}
-	
+		
 }
