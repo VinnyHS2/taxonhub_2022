@@ -17,13 +17,17 @@ import com.eng.taxonhub.service.StorageService;
 @RequestMapping(path = { "/file" }, produces = MediaType.APPLICATION_JSON_VALUE)
 public class UploadFileController {
 	
+	private final StorageService storageService;
+
 	@Autowired
-	StorageService storageService;
+	public UploadFileController(StorageService storageService) {
+		this.storageService = storageService;
+	}
 
 	@PostMapping("/")
-	public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file) throws Exception {
 
-		storageService.store(file);
+		storageService.salvar(file);
 		
 		return ResponseEntity.ok().build();
 	}
