@@ -27,18 +27,16 @@ public class StorageService {
 
 	public void salvar(MultipartFile file) throws Exception {
 
-		System.out.println(this.rootLocation);
-		
 		try {
 			if (file.isEmpty()) {
-				throw new Exception("1");
+				throw new Exception("Arquivo vazio");
 			}
 			Path destinationFile = this.rootLocation.resolve(
 					Paths.get(file.getOriginalFilename()))
 					.normalize().toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				// This is a security check
-				throw new Exception("2");
+				throw new Exception("O arquivo já existe");
 			}
 			try (InputStream inputStream = file.getInputStream()) {
 				Files.copy(inputStream, destinationFile,
@@ -46,7 +44,7 @@ public class StorageService {
 			}
 		}
 		catch (IOException e) {
-			throw new Exception("3");
+			throw new Exception("Arquivo inacessivel");
 		}
 	}
 	
