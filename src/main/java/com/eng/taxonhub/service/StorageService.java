@@ -54,7 +54,7 @@ public class StorageService {
 	public boolean extensaoCsv(MultipartFile file) throws Exception {
 
 		String extensao = file.getOriginalFilename().split("\\.")[1];
-
+		
 		if ("csv".equals(extensao)) {
 
 			Tika tika = new Tika();
