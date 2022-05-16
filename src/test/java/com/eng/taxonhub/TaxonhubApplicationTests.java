@@ -1,48 +1,43 @@
 package com.eng.taxonhub;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import javax.net.ssl.SSLEngineResult.Status;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.eng.taxonhub.service.StorageService;
 
-@AutoConfigureMockMvc
 @SpringBootTest
+@AutoConfigureMockMvc
+@ComponentScan("com.eng")
 class TaxonhubApplicationTests {
 
+	@Test
+	void contextLoads() {
+	}
+	
 	@Autowired
 	private MockMvc mvc;
 
 	@MockBean
 	private StorageService storageService;
 
-	@Test
-	void contextLoads() {
-	}
-
+	
 	@Test
 	public void uploadArquivoOk() throws Exception {
 
 		MockMultipartFile file 
 	      = new MockMultipartFile(
 	        "file", 
-	        "hello.txt", 
+	        "hello.csv", 
 	        MediaType.TEXT_PLAIN_VALUE, 
 	        "Hello, World!".getBytes()
 	      );
@@ -52,5 +47,24 @@ class TaxonhubApplicationTests {
 				.andExpect(status().isOk());
 
 	}
-	
+
+	@Test
+	public void uploadArquivoException() throws Exception {
+		
+		MockMultipartFile file2
+		= new MockMultipartFile(
+				"file2", 
+				"teste.txt", 
+				MediaType.TEXT_PLAIN_VALUE, 
+				"Hello, World!".getBytes()
+				);
+		
+		System.out.println(file2);
+		
+		mvc.perform(MockMvcRequestBuilders.multipart("/file/")
+				.file(file2))
+		.andExpect(status().isBadRequest());
+		
+	}
+
 }
