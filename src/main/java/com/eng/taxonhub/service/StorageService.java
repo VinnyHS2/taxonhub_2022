@@ -8,16 +8,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
+import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eng.taxonhub.config.StorageConfig;
+import com.eng.taxonhub.exceptions.BadRequestException;
+import com.eng.taxonhub.exceptions.NotFoundException;
 
 @Service
 public class StorageService {
-	
+
 	private final Path rootLocation;
 
 	@Autowired
@@ -29,23 +32,42 @@ public class StorageService {
 
 		try {
 			if (file.isEmpty()) {
-				throw new Exception("Arquivo vazio");
+				throw new BadRequestException("Arquivo vazio");
 			}
-			Path destinationFile = this.rootLocation.resolve(
-					Paths.get(file.getOriginalFilename()))
-					.normalize().toAbsolutePath();
+			Path destinationFile = this.rootLocation.resolve(Paths.get(file.getOriginalFilename())).normalize()
+					.toAbsolutePath();
 			if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				// This is a security check
-				throw new Exception("O arquivo já existe");
+				throw new BadRequestException("Você não quer fazer isso");
+			}
+			if (!extensaoCsv(file)) {
+				throw new BadRequestException("Arquivo não é csv");
 			}
 			try (InputStream inputStream = file.getInputStream()) {
-				Files.copy(inputStream, destinationFile,
-					StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
 			}
-		}
-		catch (IOException e) {
-			throw new Exception("Arquivo inacessivel");
+		} catch (IOException e) {
+			throw new NotFoundException("Arquivo inacessivel");
 		}
 	}
-	
+
+	public boolean extensaoCsv(MultipartFile file) throws Exception {
+
+		String extensao = file.getOriginalFilename().split("\\.")[1];
+		
+		if ("csv".equals(extensao)) {
+
+			Tika tika = new Tika();
+			String detectedType = tika.detect(file.getBytes());
+			if ("text/plain".equals(detectedType)) {
+
+				return true;
+
+			}
+		}
+
+		return false;
+
+	}
+
 }
