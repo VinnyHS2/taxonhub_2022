@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eng.taxonhub.dto.VersionDto;
 import com.eng.taxonhub.model.TheWorldFloraDatabaseVersion;
 import com.eng.taxonhub.repository.TheWorldFloraDatabaseVersionRepository;
 
@@ -33,7 +34,7 @@ public class TaxonomicaService {
 	TheWorldFloraDatabaseVersionRepository databaseVersionRepository;
 	
 	@Transactional(rollbackFor = Throwable.class)
-	public String VerifyVersion() throws Exception {
+	public VersionDto VerifyVersion() throws Exception {
 		String url = "http://www.worldfloraonline.org/downloadData";
 		Document doc = Jsoup.connect(url).get();
 
@@ -45,7 +46,8 @@ public class TaxonomicaService {
 			URL urlDatabase = new URL(urlDownload);
 			UpdateDatabase(urlDatabase, version);
 		}
-		return version;
+		VersionDto response = VersionDto.builder().version(version).build();
+		return response;
 	}
 	
 	public static void downloadFile(URL url, String fileName) throws IOException {

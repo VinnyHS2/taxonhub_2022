@@ -12,9 +12,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * @author MZN Solucoes
- */
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
