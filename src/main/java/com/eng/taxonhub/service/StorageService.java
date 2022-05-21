@@ -2,10 +2,13 @@ package com.eng.taxonhub.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,23 @@ import org.springframework.web.multipart.MultipartFile;
 import com.eng.taxonhub.config.StorageConfig;
 import com.eng.taxonhub.exceptions.BadRequestException;
 import com.eng.taxonhub.exceptions.NotFoundException;
+import com.eng.taxonhub.model.CsvUpload;
+import com.eng.taxonhub.model.SpecieName;
+import com.eng.taxonhub.repository.CsvUploadRepository;
+import com.eng.taxonhub.repository.SpecieNameRepository;
+import com.eng.taxonhub.repository.TheWorldFloraDatabaseVersionRepository;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 @Service
 public class StorageService {
 
+	@Autowired
+	SpecieNameRepository specieRepository;
+	
+	@Autowired
+	CsvUploadRepository csvRepository;
+	
 	private final Path rootLocation;
 
 	@Autowired
@@ -66,6 +82,25 @@ public class StorageService {
 
 		return false;
 
+	}
+	
+	public void validarCSV(String validateCSV) throws Exception {
+		Reader reader = Files.newBufferedReader(Paths.get("./files/"+validateCSV));
+		CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+		
+		List<String[]> nomesBinominais = csvReader.readAll();
+		List<SpecieName> species = new ArrayList<SpecieName>(); 
+		for( String[] nomeBinominal : nomesBinominais) {
+			String[] verificarNomes = nomeBinominal[0].split(" ");
+			int size = verificarNomes.length;
+			if(size == 2) {
+				SpecieName especie = SpecieName.builder().speciesNames(nomeBinominal[0]).build();
+				species.add(especie);
+			}
+		}
+		specieRepository.saveAll(species);
+		CsvUpload csv = CsvUpload.builder().speciesNames(species).build();
+		csvRepository.save(csv);
 	}
 
 }
