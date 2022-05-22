@@ -86,7 +86,7 @@ public class StorageService {
 	
 	public void validarCSV(String validateCSV) throws Exception {
 		Reader reader = Files.newBufferedReader(Paths.get("./files/"+validateCSV));
-		CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
+		CSVReader csvReader = new CSVReaderBuilder(reader).build();
 		
 		List<String[]> nomesBinominais = csvReader.readAll();
 		List<SpecieName> species = new ArrayList<SpecieName>(); 
