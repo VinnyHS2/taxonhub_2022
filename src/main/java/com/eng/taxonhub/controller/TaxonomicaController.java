@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eng.taxonhub.dto.VersionDto;
 import com.eng.taxonhub.service.TaxonomicaService;
 
 
@@ -20,7 +21,7 @@ public class TaxonomicaController {
 	TaxonomicaService taxonomicaService;
 	
 	@GetMapping("/version")
-	public ResponseEntity<String> verifyVersion() throws Exception {
+	public ResponseEntity<VersionDto> verifyVersion() throws Exception {
 		return ResponseEntity.ok(taxonomicaService.VerifyVersion());
 	}
 		
