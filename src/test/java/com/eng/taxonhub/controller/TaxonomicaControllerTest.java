@@ -63,6 +63,7 @@ public class TaxonomicaControllerTest {
 		Element element = doc.getElementsByTag("tr").first();
 		String version = element.childNodes().get(3).childNodes().get(0).toString();
 		Optional<TheWorldFloraDatabaseVersion> mockVersion = Optional.of(TheWorldFloraDatabaseVersion.builder().databaseVersion(version).build());
+		when(databaseVersionRepository.findByVersion(version)).thenReturn(Optional.empty());
 		when(databaseVersionRepository.save(mockVersion.get())).thenReturn(mockVersion.get());
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/the-world-flora/version")).andExpect(status().isOk())
 		.andExpect(jsonPath("$.version").value(version));
