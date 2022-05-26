@@ -114,6 +114,15 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.6</version>
+				<configuration>
+					<excludes>
+						<exclude>com/eng/taxonhub/dto/*</exclude>
+						<exclude>com/eng/taxonhub/model/*</exclude>
+						<exclude>com/eng/taxonhub/repository/*</exclude>
+						<exclude>com/eng/taxonhub/exceptions/*</exclude>
+						<exclude>**/config/*</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>jacoco-initialize</id>
