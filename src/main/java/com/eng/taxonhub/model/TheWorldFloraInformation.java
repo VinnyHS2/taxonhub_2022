@@ -30,91 +30,91 @@ public class TheWorldFloraInformation implements Persistable<UUID> {
 	@Column(name = "id", updatable = false, nullable = false)
 	private UUID id;
 
-	@Column(name = "taxon_id")
+	@Column(name = "taxon_id",length=600)
 	private String taxonID;
 
-	@Column(name = "scientific_name_id")
+	@Column(name = "scientific_name_id",length=600)
 	private String scientificNameID;
 
-	@Column(name = "local_id")
+	@Column(name = "local_id",length=600)
 	private String localID;
 
-	@Column(name = "scientific_name")
+	@Column(name = "scientific_name",length=600)
 	private String scientificName;
 
-	@Column(name = "taxon_rank")
+	@Column(name = "taxon_rank",length=600)
 	private String taxonRank;
 
-	@Column(name = "parent_name_usage_id")
+	@Column(name = "parent_name_usage_id",length=600)
 	private String parentNameUsageID;
 
-	@Column(name = "scientific_name_authorship")
+	@Column(name = "scientific_name_authorship",length=600)
 	private String scientificNameAuthorship;
 
-	@Column(name = "family")
+	@Column(name = "family",length=600)
 	private String family;
 
-	@Column(name = "subfamily")
+	@Column(name = "subfamily",length=600)
 	private String subfamily;
 
-	@Column(name = "tribe")
+	@Column(name = "tribe",length=600)
 	private String tribe;
 
-	@Column(name = "subtribe")
+	@Column(name = "subtribe",length=600)
 	private String subtribe;
 
-	@Column(name = "genus")
+	@Column(name = "genus",length=600)
 	private String genus;
 
-	@Column(name = "subgenus")
+	@Column(name = "subgenus",length=600)
 	private String subgenus;
 
-	@Column(name = "specific_epithet")
+	@Column(name = "specific_epithet",length=600)
 	private String specificEpithet;
 
-	@Column(name = "infraspecific_epithet")
+	@Column(name = "infraspecific_epithet",length=600)
 	private String infraspecificEpithet;
 
-	@Column(name = "verbatim_taxon_rank")
+	@Column(name = "verbatim_taxon_rank",length=600)
 	private String verbatimTaxonRank;
 	
-	@Column(name = "nomenclatural_status")
+	@Column(name = "nomenclatural_status",length=600)
 	private String nomenclaturalStatus;
 	
-	@Column(name = "name_published_in")
+	@Column(name = "name_published_in",length=600)
 	private String namePublishedIn;
 	
-	@Column(name = "taxonomic_status")
+	@Column(name = "taxonomic_status",length=600)
 	private String taxonomicStatus;
 	
-	@Column(name = "accepted_name_usage_id")
+	@Column(name = "accepted_name_usage_id",length=600)
 	private String acceptedNameUsageID;
 	
-	@Column(name = "original_name_usage_id")
+	@Column(name = "original_name_usage_id",length=600)
 	private String originalNameUsageID;
 	
-	@Column(name = "name_according_to_id")
+	@Column(name = "name_according_to_id",length=600)
 	private String nameAccordingToID;
 	
-	@Column(name = "taxon_remarks")
+	@Column(name = "taxon_remarks",length=600)
 	private String taxonRemarks;
 	
-	@Column(name = "created")
+	@Column(name = "created",length=600)
 	private String created;
 	
-	@Column(name = "modified")
+	@Column(name = "modified",length=600)
 	private String modified;
 	
-	@Column(name = "`references`")
+	@Column(name = "`references`",length=600)
 	private String references;
 	
-	@Column(name = "source")
+	@Column(name = "source",length=600)
 	private String source;
 	
-	@Column(name = "major_group")
+	@Column(name = "major_group",length=600)
 	private String majorGroup;
 	
-	@Column(name = "tpl_id")
+	@Column(name = "tpl_id",length=600)
 	private String tplId;
 
 	@Override
