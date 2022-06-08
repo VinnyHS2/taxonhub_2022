@@ -140,7 +140,7 @@ public class StorageService {
 			}
 		    TheWorldFloraInformation theWorldFloraInformation = TheWorldFloraInformation.builder()
 		    		.taxonID(dadosBruto[0])
-		    		.scientificName(dadosBruto[1])
+		    		.scientificNameID(dadosBruto[1])
 					.localID(dadosBruto[2])
 					.scientificName(dadosBruto.length >= 4? dadosBruto[3]: "")
 					.taxonRank(dadosBruto.length >= 5? dadosBruto[4]: "")
