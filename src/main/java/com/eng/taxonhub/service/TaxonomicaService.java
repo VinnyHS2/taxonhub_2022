@@ -1,20 +1,7 @@
 package com.eng.taxonhub.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,7 +19,10 @@ public class TaxonomicaService {
 
 	@Autowired
 	TheWorldFloraDatabaseVersionRepository databaseVersionRepository;
-	
+
+	@Autowired
+	StorageService	storageService;
+
 	@Transactional(rollbackFor = Throwable.class)
 	public VersionDto VerifyVersion() throws Exception {
 		String url = "http://www.worldfloraonline.org/downloadData";
@@ -44,59 +34,14 @@ public class TaxonomicaService {
 		if (localVersion.isEmpty()) {
 			String urlDownload = element.childNodes().get(1).childNodes().get(0).attr("abs:href");
 			URL urlDatabase = new URL(urlDownload);
-			UpdateDatabase(urlDatabase, version);
+			this.storageService.UpdateDatabase(urlDatabase, version);
+			TheWorldFloraDatabaseVersion newVersion = TheWorldFloraDatabaseVersion.builder().databaseVersion(version)
+					.build();
+			databaseVersionRepository.save(newVersion);
 		}
 		VersionDto response = VersionDto.builder().version(version).build();
 		return response;
 	}
+
 	
-	public static void downloadFile(URL url, String fileName) throws IOException {
-		try (InputStream in = url.openStream();
-				ReadableByteChannel rbc = Channels.newChannel(in);
-				FileOutputStream fos = new FileOutputStream(fileName)) {
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-		}
-	}
-	
-	@Transactional(rollbackFor = Throwable.class)
-	public void UpdateDatabase(URL url, String version) throws Exception {
-		downloadFile(url, "./files/tmpUpdateDatabase.zip");
-		try (ZipInputStream zis = new ZipInputStream(new FileInputStream("./files/tmpUpdateDatabase.zip"))) {
-			ZipEntry zipEntry = zis.getNextEntry();
-			while (zipEntry != null) {
-				boolean isDirectory = false;
-				if (zipEntry.getName().endsWith(File.separator)) {
-					isDirectory = true;
-				}
-				Path newPath = zipSlipProtect(zipEntry, Paths.get("files/tmpUpdateDatabaseFolder"));
-				if (isDirectory) {
-					Files.createDirectories(newPath);
-				} else {
-					if (newPath.getParent() != null) {
-						if (Files.notExists(newPath.getParent())) {
-							Files.createDirectories(newPath.getParent());
-						}
-					}
-					Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
-				}
-				zipEntry = zis.getNextEntry();
-			}
-			zis.closeEntry();
-			TheWorldFloraDatabaseVersion newVersion = TheWorldFloraDatabaseVersion.builder().databaseVersion(version).build();
-			databaseVersionRepository.save(newVersion);
-		}
-		Files.deleteIfExists(Paths.get("./files/tmpUpdateDatabase.zip"));
-	}
-
-	public static Path zipSlipProtect(ZipEntry zipEntry, Path targetDir) throws IOException {
-
-		Path targetDirResolved = targetDir.resolve(zipEntry.getName());
-
-		Path normalizePath = targetDirResolved.normalize();
-		if (!normalizePath.startsWith(targetDir)) {
-			throw new IOException("Bad zip entry: " + zipEntry.getName());
-		}
-
-		return normalizePath;
-	}
 }
