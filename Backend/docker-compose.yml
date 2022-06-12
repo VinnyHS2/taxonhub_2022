@@ -1,0 +1,38 @@
+version: '3'
+
+networks:
+  taxonhub_network:
+    driver: bridge    
+
+services:
+
+
+###################################################
+
+ taxonhub_pgadmin:
+    restart: always
+    image: dpage/pgadmin4
+    container_name: taxonhub-pgadmin
+    networks:
+      - taxonhub_network
+    ports:
+      - 15432:80
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=p0stgr3s
+      - PGADMIN_DEFAULT_EMAIL=postgres@postgres.com
+    depends_on:
+      - taxonhub_postgres_local
+
+
+ taxonhub_postgres_local:
+    restart: always
+    container_name: postgres-taxonhub-local
+    image: postgres:12.2-alpine
+    networks:
+      - taxonhub_network
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=taxonhub
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
