@@ -1,0 +1,49 @@
+<nav class="navbar navbar-dark navbar-expand-lg bg-dark p-2">
+  <button
+    class="btn btn-outline-light"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#collapseWidthExample"
+    aria-expanded="false"
+  >
+    <i class="bi bi-list"></i>
+  </button>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/home"><img src="./assets/images/logo-branca.png" alt=""></a>
+  </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <form class="d-flex" role="search">
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Pombos"
+        aria-label="Search"
+      />
+      <button class="btn btn-outline-light" type="submit">Procurar</button>
+    </form>
+  </div>
+</nav>
+
+<div
+  class="collapse collapse-horizontal position-fixed"
+  id="collapseWidthExample"
+>
+  <div class="card card-body" style="width: 300px">
+    <span class="text-center"> Selecione o Tipo de busca </span>
+    <hr />
+    <button
+      class="btn btn-outline-dark"
+      type="button"
+      (click)="btnTaxonomica()"
+    >
+      Validação Taxonomica
+    </button>
+    <button
+      class="btn btn-outline-dark"
+      type="button"
+      (click)="btnOcorrencia()"
+    >
+      Busca de Ocorrência
+    </button>
+  </div>
+</div>

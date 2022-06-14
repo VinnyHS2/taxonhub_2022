@@ -1,0 +1,23 @@
+.tabela {
+    overflow-y: auto;
+    width: 100vw;
+}
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-family: system-ui;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 8px !important;
+    white-space: nowrap;
+}
+.mat-header-row {
+    height: 100% !important;;   
+}
+td {
+    font-family: system-ui;
+    font-size: 16px;
+    padding: 8px !important;
+    vertical-align: middle;
+    white-space: nowrap;
+}
