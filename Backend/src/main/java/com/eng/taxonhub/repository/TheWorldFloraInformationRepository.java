@@ -26,4 +26,16 @@ public interface TheWorldFloraInformationRepository extends JpaRepository<TheWor
 			+ " AND wfo.specific_epithet = :specific_epithet ")
 	List<TheWorldFloraInformation> findBySpecieName(@Param("genus") String genus, @Param("specific_epithet") String specificEpithet);
 	
+	@Query(nativeQuery = true, value = "SELECT * "
+			+ " FROM the_world_flora_information wfo "
+			+ " WHERE wfo.scientific_name LIKE %:name% ")
+	List<TheWorldFloraInformation> findByScientificName(@Param("name") String name);
+	
+	@Query(nativeQuery = true, value = "SELECT * "
+			+ " FROM the_world_flora_information wfo "
+			+ " WHERE wfo.accepted_name_usage_id = :taxonId ")
+	List<TheWorldFloraInformation> findByAcceptedNameUsageId(@Param("taxonId") String taxonId);
+	
+	
+	
 }

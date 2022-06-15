@@ -101,7 +101,16 @@ public class TaxonhubStorageServiceTest {
         ListTaxonomicaDto responseDto
                 = gson.fromJson(responseBody, ListTaxonomicaDto.class);
         TaxonomicaDto dto = responseDto.getResultados().get(0);
+        TaxonomicaDto dto1 = responseDto.getResultados().get(1);
         TaxonomicaDto dtoEsperado = TaxonomicaDto.builder()
+        		.autor("(Rataj) Christenh. & Byng")
+        		.baseDeDados("The World Flora Online")
+        		.familiaRespectiva("alismataceae")
+        		.nomePesquisado("Echinodorus cylindricus")
+        		.nomesRetornados("aquarius cylindricus")
+        		.sinonimo("ACCEPTED")
+        		.build();
+        TaxonomicaDto dtoEsperado1 = TaxonomicaDto.builder()
         		.autor("Rataj")
         		.baseDeDados("The World Flora Online")
         		.familiaRespectiva("alismataceae")
@@ -110,6 +119,7 @@ public class TaxonhubStorageServiceTest {
         		.sinonimo("SYNONYM")
         		.build();
         Assertions.assertEquals(dto, dtoEsperado);
+        Assertions.assertEquals(dto1, dtoEsperado1);
 		
 	}
 	
