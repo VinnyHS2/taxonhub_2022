@@ -27,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eng.taxonhub.config.StorageConfig;
+import com.eng.taxonhub.dto.ListTaxonomicaDto;
+import com.eng.taxonhub.dto.PathDto;
+import com.eng.taxonhub.dto.TaxonomicaDto;
 import com.eng.taxonhub.exceptions.BadRequestException;
 import com.eng.taxonhub.exceptions.NotFoundException;
 import com.eng.taxonhub.model.CsvUpload;
@@ -43,13 +46,13 @@ public class StorageService {
 
 	@Autowired
 	SpecieNameRepository specieRepository;
-	
+
 	@Autowired
 	CsvUploadRepository csvRepository;
-	
+
 	@Autowired
 	TheWorldFloraInformationRepository theWorldFloraInformationRepository;
-	
+
 	private final Path rootLocation;
 
 	@Autowired
@@ -80,10 +83,51 @@ public class StorageService {
 		}
 	}
 
+	public ListTaxonomicaDto buscaTaxonomica(MultipartFile file) throws Exception {
+
+		salvar(file);
+//		@formatter:off
+		PathDto pathDto = PathDto.builder()
+				.path(this.rootLocation.resolve(
+						Paths.get(file.getOriginalFilename()))
+						.normalize()
+						.toAbsolutePath()
+						.toString())
+				.build();
+//		@formatter:on
+		CsvUpload csvFiltrado = validarCSV(pathDto);
+
+		List<TaxonomicaDto> dto = new ArrayList<TaxonomicaDto>();
+		csvFiltrado.getSpeciesNames().forEach(nome -> {
+			String[] nomeSeparado = nome.getSpeciesNames().split(" "); 
+			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository.findBySpecieName(nomeSeparado[0],nomeSeparado[1]);
+			resultado.forEach(information -> {
+//				@formatter:off
+
+				TaxonomicaDto informationDto = TaxonomicaDto.builder()
+						.baseDeDados("The World Flora Online")
+						.familiaRespectiva(information.getFamily())
+						.nomePesquisado(nome.getSpeciesNames())
+						.nomesRetornados(information.getScientificName())
+						.sinonimo(information.getTaxonomicStatus())
+						.autor(information.getScientificNameAuthorship())
+						.build();
+//		@formatter:on
+				dto.add(informationDto);
+			});
+		});
+		ListTaxonomicaDto response = ListTaxonomicaDto.builder()
+				.resultados(dto)
+				.build();
+		
+		return response;
+		
+	}
+
 	public boolean extensaoCsv(MultipartFile file) throws Exception {
 
 		String extensao = file.getOriginalFilename().split("\\.")[1];
-		
+
 		if ("csv".equals(extensao)) {
 
 			Tika tika = new Tika();
@@ -98,17 +142,17 @@ public class StorageService {
 		return false;
 
 	}
-	
-	public void validarCSV(String validateCSV) throws Exception {
-		Reader reader = Files.newBufferedReader(Paths.get("./files/"+validateCSV));
+
+	public CsvUpload validarCSV(PathDto dto) throws Exception {
+		Reader reader = Files.newBufferedReader(Paths.get(dto.getPath()));
 		CSVReader csvReader = new CSVReaderBuilder(reader).build();
-		
+
 		List<String[]> nomesBinominais = csvReader.readAll();
-		List<SpecieName> species = new ArrayList<SpecieName>(); 
-		for( String[] nomeBinominal : nomesBinominais) {
+		List<SpecieName> species = new ArrayList<SpecieName>();
+		for (String[] nomeBinominal : nomesBinominais) {
 			String[] verificarNomes = nomeBinominal[0].split(" ");
 			int size = verificarNomes.length;
-			if(size == 2) {
+			if (size == 2) {
 				SpecieName especie = SpecieName.builder().speciesNames(nomeBinominal[0]).build();
 				species.add(especie);
 			}
@@ -116,8 +160,9 @@ public class StorageService {
 		specieRepository.saveAll(species);
 		CsvUpload csv = CsvUpload.builder().speciesNames(species).build();
 		csvRepository.save(csv);
+		return csv;
 	}
-	
+
 	public void downloadFile(URL url, String fileName) throws IOException {
 		try (InputStream in = url.openStream();
 				ReadableByteChannel rbc = Channels.newChannel(in);
@@ -171,7 +216,7 @@ public class StorageService {
 		    		.build();
 //			@formatter:on
 
-				theWorldFloraInformations.add(theWorldFloraInformation);
+			theWorldFloraInformations.add(theWorldFloraInformation);
 		}
 		theWorldFloraInformationRepository.saveAll(theWorldFloraInformations);
 
@@ -205,10 +250,10 @@ public class StorageService {
 		insertOnDataBase("files/tmpUpdateDatabaseFolder/classification.txt");
 		Files.deleteIfExists(Paths.get("./files/tmpUpdateDatabase.zip"));
 		File index = new File("files/tmpUpdateDatabaseFolder");
-		String[]entries = index.list();
-		for(String s: entries){
-		    File currentFile = new File(index.getPath(),s);
-		    currentFile.delete();
+		String[] entries = index.list();
+		for (String s : entries) {
+			File currentFile = new File(index.getPath(), s);
+			currentFile.delete();
 		}
 		Files.deleteIfExists(Paths.get("./files/tmpUpdateDatabaseFolder"));
 	}

@@ -1,17 +1,20 @@
 package com.eng.taxonhub.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eng.taxonhub.dto.ListTaxonomicaDto;
+import com.eng.taxonhub.dto.PathDto;
 import com.eng.taxonhub.service.StorageService;
 
 @Validated
@@ -34,12 +37,18 @@ public class StorageController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@GetMapping("/{validateCSV}")
-	public ResponseEntity<?> validationCSV(@PathVariable(name = "validateCSV", required = true) String validateCSV) throws Exception{
+	@PostMapping("/validate")
+	public ResponseEntity<?> validationCSV(@Valid @RequestBody PathDto dto) throws Exception{
 		
-		storageService.validarCSV(validateCSV);
+		storageService.validarCSV(dto);
 		
 		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/taxonomica")
+	public ResponseEntity<ListTaxonomicaDto> BuscaTaxonomica(@RequestParam("file") MultipartFile file) throws Exception{
+				
+		return ResponseEntity.ok(storageService.buscaTaxonomica(file));
 	}
 	
 }
