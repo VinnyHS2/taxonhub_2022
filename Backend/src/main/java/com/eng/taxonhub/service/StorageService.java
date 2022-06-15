@@ -100,7 +100,7 @@ public class StorageService {
 		List<TaxonomicaDto> dto = new ArrayList<TaxonomicaDto>();
 		csvFiltrado.getSpeciesNames().forEach(nome -> {
 			String[] nomeSeparado = nome.getSpeciesNames().split(" "); 
-			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository.findBySpecieName(nomeSeparado[0],nomeSeparado[1]);
+			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository.findBySpecieName(nomeSeparado[0].toLowerCase(),nomeSeparado[1].toLowerCase());
 			resultado.forEach(information -> {
 //				@formatter:off
 
@@ -187,18 +187,18 @@ public class StorageService {
 		    		.taxonID(dadosBruto[0])
 		    		.scientificNameID(dadosBruto[1])
 					.localID(dadosBruto[2])
-					.scientificName(dadosBruto.length >= 4? dadosBruto[3]: "")
+					.scientificName(dadosBruto.length >= 4? dadosBruto[3].toLowerCase(): "")
 					.taxonRank(dadosBruto.length >= 5? dadosBruto[4]: "")
 					.parentNameUsageID(dadosBruto.length >= 6? dadosBruto[5]: "")
 					.scientificNameAuthorship(dadosBruto.length >= 7? dadosBruto[6]: "")
-					.family(dadosBruto.length >= 8? dadosBruto[7]: "")
-					.subfamily(dadosBruto.length >= 9? dadosBruto[8]: "")
-					.tribe(dadosBruto.length >= 10? dadosBruto[9]: "")
-					.subtribe(dadosBruto.length >= 11? dadosBruto[10]: "")
-					.genus(dadosBruto.length >= 12? dadosBruto[11]: "")
-					.subgenus(dadosBruto.length >= 13? dadosBruto[12]: "")
-					.specificEpithet(dadosBruto.length >= 14? dadosBruto[13]: "")
-					.infraspecificEpithet(dadosBruto.length >= 15? dadosBruto[14]: "")
+					.family(dadosBruto.length >= 8? dadosBruto[7].toLowerCase(): "")
+					.subfamily(dadosBruto.length >= 9? dadosBruto[8].toLowerCase(): "")
+					.tribe(dadosBruto.length >= 10? dadosBruto[9].toLowerCase(): "")
+					.subtribe(dadosBruto.length >= 11? dadosBruto[10].toLowerCase(): "")
+					.genus(dadosBruto.length >= 12? dadosBruto[11].toLowerCase(): "")
+					.subgenus(dadosBruto.length >= 13? dadosBruto[12].toLowerCase(): "")
+					.specificEpithet(dadosBruto.length >= 14? dadosBruto[13].toLowerCase(): "")
+					.infraspecificEpithet(dadosBruto.length >= 15? dadosBruto[14].toLowerCase(): "")
 					.verbatimTaxonRank(dadosBruto.length >= 16? dadosBruto[15]: "")
 					.nomenclaturalStatus(dadosBruto.length >= 17? dadosBruto[16]: "")
 					.namePublishedIn(dadosBruto.length >= 18? dadosBruto[17]: "")

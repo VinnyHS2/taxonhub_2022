@@ -51,15 +51,15 @@ public class TaxonhubStorageServiceTest {
 		Assertions.assertTrue(newData.isPresent());
 		Assertions.assertTrue(newData.get().getScientificNameID().equals("urn:lsid:ipni.org:names:195146-1"));
 		Assertions.assertTrue(newData.get().getLocalID().equals("GCC-FA54B065-8C1D-48CC-8CE0-000012FB41F0"));
-		Assertions.assertTrue(newData.get().getScientificName().equals("Cirsium caput-medusae"));
+		Assertions.assertTrue(newData.get().getScientificName().equals("cirsium caput-medusae"));
 		Assertions.assertTrue(newData.get().getTaxonRank().equals("SPECIES"));
 		Assertions.assertTrue(newData.get().getParentNameUsageID().equals(""));
 		Assertions.assertTrue(newData.get().getScientificNameAuthorship().equals("Schur ex Nyman"));
-		Assertions.assertTrue(newData.get().getFamily().equals("Asteraceae"));
+		Assertions.assertTrue(newData.get().getFamily().equals("asteraceae"));
 		Assertions.assertTrue(newData.get().getSubfamily().equals(""));
 		Assertions.assertTrue(newData.get().getTribe().equals(""));
 		Assertions.assertTrue(newData.get().getSubtribe().equals(""));
-		Assertions.assertTrue(newData.get().getGenus().equals("Cirsium"));
+		Assertions.assertTrue(newData.get().getGenus().equals("cirsium"));
 		Assertions.assertTrue(newData.get().getSubgenus().equals(""));
 		Assertions.assertTrue(newData.get().getSpecificEpithet().equals("caput-medusae"));
 		Assertions.assertTrue(newData.get().getInfraspecificEpithet().equals(""));
@@ -104,9 +104,9 @@ public class TaxonhubStorageServiceTest {
         TaxonomicaDto dtoEsperado = TaxonomicaDto.builder()
         		.autor("Rataj")
         		.baseDeDados("The World Flora Online")
-        		.familiaRespectiva("Alismataceae")
+        		.familiaRespectiva("alismataceae")
         		.nomePesquisado("Echinodorus cylindricus")
-        		.nomesRetornados("Echinodorus cylindricus")
+        		.nomesRetornados("echinodorus cylindricus")
         		.sinonimo("SYNONYM")
         		.build();
         Assertions.assertEquals(dto, dtoEsperado);
