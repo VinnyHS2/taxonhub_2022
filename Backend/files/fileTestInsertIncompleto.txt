@@ -1,0 +1,2 @@
+taxonID	scientificNameID	localID	scientificName	taxonRank	parentNameUsageID	scientificNameAuthorship	family	subfamily	tribe	subtribe	genus	subgenus	specificEpithet	infraspecificEpithet	verbatimTaxonRank	nomenclaturalStatus	namePublishedIn	taxonomicStatus	acceptedNameUsageID	originalNameUsageID	nameAccordingToID	taxonRemarks	created	modified	references	source	majorGroup	tplId
+pato2	urn:lsid:ipni.org:names:195146-1	GCC-FA54B065-8C1D-48CC-8CE0-000012FB41F0																																									
