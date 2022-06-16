@@ -1,5 +1,6 @@
 package com.eng.taxonhub.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,4 +19,23 @@ public interface TheWorldFloraInformationRepository extends JpaRepository<TheWor
 			+ " FROM the_world_flora_information wfo "
 			+ "	WHERE wfo.taxon_id = :taxonId")
 	Optional<TheWorldFloraInformation> findByTaxonID(@Param("taxonId") String taxonId);
+	
+	@Query(nativeQuery = true, value = "SELECT * "
+			+ " FROM the_world_flora_information wfo "
+			+ "	WHERE wfo.genus = :genus "
+			+ " AND wfo.specific_epithet = :specific_epithet ")
+	List<TheWorldFloraInformation> findBySpecieName(@Param("genus") String genus, @Param("specific_epithet") String specificEpithet);
+	
+	@Query(nativeQuery = true, value = "SELECT * "
+			+ " FROM the_world_flora_information wfo "
+			+ " WHERE wfo.scientific_name LIKE %:name% ")
+	List<TheWorldFloraInformation> findByScientificName(@Param("name") String name);
+	
+	@Query(nativeQuery = true, value = "SELECT * "
+			+ " FROM the_world_flora_information wfo "
+			+ " WHERE wfo.accepted_name_usage_id = :taxonId ")
+	List<TheWorldFloraInformation> findByAcceptedNameUsageId(@Param("taxonId") String taxonId);
+	
+	
+	
 }

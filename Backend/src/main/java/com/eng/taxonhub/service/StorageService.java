@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -27,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eng.taxonhub.config.StorageConfig;
+import com.eng.taxonhub.dto.ListTaxonomicaDto;
+import com.eng.taxonhub.dto.PathDto;
+import com.eng.taxonhub.dto.TaxonomicaDto;
 import com.eng.taxonhub.exceptions.BadRequestException;
 import com.eng.taxonhub.exceptions.NotFoundException;
 import com.eng.taxonhub.model.CsvUpload;
@@ -43,13 +47,13 @@ public class StorageService {
 
 	@Autowired
 	SpecieNameRepository specieRepository;
-	
+
 	@Autowired
 	CsvUploadRepository csvRepository;
-	
+
 	@Autowired
 	TheWorldFloraInformationRepository theWorldFloraInformationRepository;
-	
+
 	private final Path rootLocation;
 
 	@Autowired
@@ -80,10 +84,76 @@ public class StorageService {
 		}
 	}
 
+	public ListTaxonomicaDto buscaTaxonomica(MultipartFile file) throws Exception {
+
+		salvar(file);
+//		@formatter:off
+		PathDto pathDto = PathDto.builder()
+				.path(this.rootLocation.resolve(
+						Paths.get(file.getOriginalFilename()))
+						.normalize()
+						.toAbsolutePath()
+						.toString())
+				.build();
+//		@formatter:on
+		CsvUpload csvFiltrado = validarCSV(pathDto);
+
+		List<TaxonomicaDto> dto = new ArrayList<TaxonomicaDto>();
+		csvFiltrado.getSpeciesNames().forEach(nome -> {
+			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository.findByScientificName(nome.getSpeciesNames().toLowerCase());
+			resultado.forEach(information -> {
+				if(information.getAcceptedNameUsageID().isEmpty()) {
+					TaxonomicaDto informationDto = TaxonomicaDto.builder()
+							.baseDeDados("The World Flora Online")
+							.familiaRespectiva(information.getFamily())
+							.nomePesquisado(nome.getSpeciesNames())
+							.nomesRetornados(information.getScientificName())
+							.sinonimo(information.getTaxonomicStatus())
+							.autor(information.getScientificNameAuthorship())
+							.build();	
+					dto.add(informationDto);
+				}else {
+					Optional<TheWorldFloraInformation> acceptedName = theWorldFloraInformationRepository.findByTaxonID(information.getAcceptedNameUsageID());
+					TheWorldFloraInformation acceptedName1 = acceptedName.get();
+					TaxonomicaDto informationDto1 = TaxonomicaDto.builder()
+							.baseDeDados("The World Flora Online")
+							.familiaRespectiva(acceptedName1.getFamily())
+							.nomePesquisado(nome.getSpeciesNames())
+							.nomesRetornados(acceptedName1.getScientificName())
+							.sinonimo(acceptedName1.getTaxonomicStatus())
+							.autor(acceptedName1.getScientificNameAuthorship())
+							.build();
+					dto.add(informationDto1);
+					List<TheWorldFloraInformation> sinonimos = theWorldFloraInformationRepository.findByAcceptedNameUsageId(acceptedName.get().getTaxonID());
+					sinonimos.forEach(sinonimo -> {
+//				@formatter:off
+						TaxonomicaDto informationDto2 = TaxonomicaDto.builder()
+								.baseDeDados("The World Flora Online")
+								.familiaRespectiva(sinonimo.getFamily())
+								.nomePesquisado(nome.getSpeciesNames())
+								.nomesRetornados(sinonimo.getScientificName())
+								.sinonimo(sinonimo.getTaxonomicStatus())
+								.autor(sinonimo.getScientificNameAuthorship())
+								.build();
+						dto.add(informationDto2);
+					});
+//				@formatter:on
+				}
+				
+			});
+		});
+		ListTaxonomicaDto response = ListTaxonomicaDto.builder()
+				.resultados(dto)
+				.build();
+		
+		return response;
+		
+	}
+
 	public boolean extensaoCsv(MultipartFile file) throws Exception {
 
 		String extensao = file.getOriginalFilename().split("\\.")[1];
-		
+
 		if ("csv".equals(extensao)) {
 
 			Tika tika = new Tika();
@@ -98,17 +168,17 @@ public class StorageService {
 		return false;
 
 	}
-	
-	public void validarCSV(String validateCSV) throws Exception {
-		Reader reader = Files.newBufferedReader(Paths.get("./files/"+validateCSV));
+
+	public CsvUpload validarCSV(PathDto dto) throws Exception {
+		Reader reader = Files.newBufferedReader(Paths.get(dto.getPath()));
 		CSVReader csvReader = new CSVReaderBuilder(reader).build();
-		
+
 		List<String[]> nomesBinominais = csvReader.readAll();
-		List<SpecieName> species = new ArrayList<SpecieName>(); 
-		for( String[] nomeBinominal : nomesBinominais) {
+		List<SpecieName> species = new ArrayList<SpecieName>();
+		for (String[] nomeBinominal : nomesBinominais) {
 			String[] verificarNomes = nomeBinominal[0].split(" ");
 			int size = verificarNomes.length;
-			if(size == 2) {
+			if (size == 2) {
 				SpecieName especie = SpecieName.builder().speciesNames(nomeBinominal[0]).build();
 				species.add(especie);
 			}
@@ -116,8 +186,9 @@ public class StorageService {
 		specieRepository.saveAll(species);
 		CsvUpload csv = CsvUpload.builder().speciesNames(species).build();
 		csvRepository.save(csv);
+		return csv;
 	}
-	
+
 	public void downloadFile(URL url, String fileName) throws IOException {
 		try (InputStream in = url.openStream();
 				ReadableByteChannel rbc = Channels.newChannel(in);
@@ -142,18 +213,18 @@ public class StorageService {
 		    		.taxonID(dadosBruto[0])
 		    		.scientificNameID(dadosBruto[1])
 					.localID(dadosBruto[2])
-					.scientificName(dadosBruto.length >= 4? dadosBruto[3]: "")
+					.scientificName(dadosBruto.length >= 4? dadosBruto[3].toLowerCase(): "")
 					.taxonRank(dadosBruto.length >= 5? dadosBruto[4]: "")
 					.parentNameUsageID(dadosBruto.length >= 6? dadosBruto[5]: "")
 					.scientificNameAuthorship(dadosBruto.length >= 7? dadosBruto[6]: "")
-					.family(dadosBruto.length >= 8? dadosBruto[7]: "")
-					.subfamily(dadosBruto.length >= 9? dadosBruto[8]: "")
-					.tribe(dadosBruto.length >= 10? dadosBruto[9]: "")
-					.subtribe(dadosBruto.length >= 11? dadosBruto[10]: "")
-					.genus(dadosBruto.length >= 12? dadosBruto[11]: "")
-					.subgenus(dadosBruto.length >= 13? dadosBruto[12]: "")
-					.specificEpithet(dadosBruto.length >= 14? dadosBruto[13]: "")
-					.infraspecificEpithet(dadosBruto.length >= 15? dadosBruto[14]: "")
+					.family(dadosBruto.length >= 8? dadosBruto[7].toLowerCase(): "")
+					.subfamily(dadosBruto.length >= 9? dadosBruto[8].toLowerCase(): "")
+					.tribe(dadosBruto.length >= 10? dadosBruto[9].toLowerCase(): "")
+					.subtribe(dadosBruto.length >= 11? dadosBruto[10].toLowerCase(): "")
+					.genus(dadosBruto.length >= 12? dadosBruto[11].toLowerCase(): "")
+					.subgenus(dadosBruto.length >= 13? dadosBruto[12].toLowerCase(): "")
+					.specificEpithet(dadosBruto.length >= 14? dadosBruto[13].toLowerCase(): "")
+					.infraspecificEpithet(dadosBruto.length >= 15? dadosBruto[14].toLowerCase(): "")
 					.verbatimTaxonRank(dadosBruto.length >= 16? dadosBruto[15]: "")
 					.nomenclaturalStatus(dadosBruto.length >= 17? dadosBruto[16]: "")
 					.namePublishedIn(dadosBruto.length >= 18? dadosBruto[17]: "")
@@ -171,7 +242,7 @@ public class StorageService {
 		    		.build();
 //			@formatter:on
 
-				theWorldFloraInformations.add(theWorldFloraInformation);
+			theWorldFloraInformations.add(theWorldFloraInformation);
 		}
 		theWorldFloraInformationRepository.saveAll(theWorldFloraInformations);
 
@@ -205,10 +276,10 @@ public class StorageService {
 		insertOnDataBase("files/tmpUpdateDatabaseFolder/classification.txt");
 		Files.deleteIfExists(Paths.get("./files/tmpUpdateDatabase.zip"));
 		File index = new File("files/tmpUpdateDatabaseFolder");
-		String[]entries = index.list();
-		for(String s: entries){
-		    File currentFile = new File(index.getPath(),s);
-		    currentFile.delete();
+		String[] entries = index.list();
+		for (String s : entries) {
+			File currentFile = new File(index.getPath(), s);
+			currentFile.delete();
 		}
 		Files.deleteIfExists(Paths.get("./files/tmpUpdateDatabaseFolder"));
 	}
