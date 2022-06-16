@@ -30,7 +30,6 @@ public interface TheWorldFloraInformationRepository extends JpaRepository<TheWor
 			+ " FROM the_world_flora_information wfo "
 			+ " WHERE wfo.scientific_name LIKE %:name% "
 			+ " AND wfo.scientific_name_authorship != '' "
-			+ " AND wfo.scientific_name != '' "
 			+ " AND wfo.family != '' "
 			+ " AND wfo.taxonomic_status != '' ")
 	List<TheWorldFloraInformation> findByScientificName(@Param("name") String name);
