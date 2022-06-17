@@ -6,12 +6,11 @@ import { HomeComponent } from './components/home/home.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent},
+  { path: '', component: HomeComponent},
   { path: '', component: MainLayoutComponent, children: [
     { path: 'taxonomica', component: TaxonomicaComponent},
     { path: 'ocorrencia', component: OcorrenciaComponent},
-  
-]}
+  ]},
   
 ];
 

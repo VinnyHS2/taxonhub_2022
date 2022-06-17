@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { resultadoTaxonomica } from 'src/app/model/resultadoTaxonomica';
 import { TaxonomicaService } from 'src/app/service/taxonomica.service';
 
@@ -14,36 +16,44 @@ import { TaxonomicaService } from 'src/app/service/taxonomica.service';
   styleUrls: ['./taxonomica.component.scss'],
 })
 export class TaxonomicaComponent implements OnInit {
-  resultadoTaxonomica = new Array<resultadoTaxonomica>();
+  resultadoTaxonomica: MatTableDataSource<resultadoTaxonomica>;
   file: File | any;
   step = 1;
   message = '';
   loading = false;
-  complete = false;
+  lenght = 0;
   confirmation = false;
   confirmation2 = false;
+  pageSize: number = 10;
+
 
   @ViewChild('fileUpload') fileUpload: any;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
-  constructor(private taxonomicaService: TaxonomicaService) {}
+  constructor(private taxonomicaService: TaxonomicaService, private cdr: ChangeDetectorRef) {}
 
   headerTable = [
-    'nomePesquisado',
-    'nomeRetornados',
+    'nome_pesquisado',
+    'nomes_retornados',
     'sinonimo',
-    'baseDeDados',
-    'familiaRespectiva',
+    'base_de_dados',
+    'familia_respectiva',
   ];
 
   ngOnInit(): void {
-    console.log(this.resultadoTaxonomica.length)
-    if (this.resultadoTaxonomica.length > 0) {
+
+    // this.resultadoTaxonomica.data.push(this.teste);
+
+    console.log(this.resultadoTaxonomica)
+    if (this.lenght > 0) {
       this.confirmation = true;
       this.confirmation2 = false;
     } else {
       this.confirmation = false;
       this.confirmation2 = true;
     }
+
+    this.cdr.detectChanges();
   }
 
   changeListener(files: any) {
@@ -54,19 +64,24 @@ export class TaxonomicaComponent implements OnInit {
       console.log(this.file.name);
     }
   }
-
+  
   onFileUploadClick() {
     this.fileUpload.nativeElement.value = '';
-    
   }
-
+  
+  scroll() {
+    window.scrollTo(0, 0);
+  }
+  
   onUpload() {
     this.loading = true;
     this.message = 'Enviando Arquivo!';
     this.step = 2;
     this.taxonomicaService.uploadFile(this.file).subscribe(
       (res: any) => {
-        console.log(res);
+        this.lenght = res.resultados.length
+        this.resultadoTaxonomica = new MatTableDataSource<resultadoTaxonomica>(res.resultados);
+        this.resultadoTaxonomica.paginator = this.paginator;
       },
       (err: any) => {
         setTimeout(() => {
@@ -79,17 +94,22 @@ export class TaxonomicaComponent implements OnInit {
         setTimeout(() => {
           this.message = "Arquivo enviado com sucesso!";
           this.loading = false;
-          this.complete = true;
-
+          
         }, 2000);
       }
-    );
-  }
-
-  close() {
-    this.step = 1;
-    this.loading = false;
-    this.complete = false;
-    this.message = '';
+      );
+    }
+    
+    close() {
+      this.step = 1;
+      this.loading = false;
+      this.message = '';
+      if (this.lenght > 0) {
+        this.confirmation = true;
+        this.confirmation2 = false;
+      } else {
+        this.confirmation = false;
+      this.confirmation2 = true;
+    }
   }
 }
