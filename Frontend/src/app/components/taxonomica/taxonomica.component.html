@@ -20,18 +20,18 @@
     class="table table-striped table-hover"
   >
     <!-- Position Column -->
-    <ng-container matColumnDef="nomePesquisado">
+    <ng-container matColumnDef="nome_pesquisado">
       <th mat-header-cell *matHeaderCellDef class="table-dark">
         Nome Pesquisado
       </th>
-      <td mat-cell *matCellDef="let element">{{ element.nomePesquisado }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.nome_pesquisado }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="nomeRetornados">
+    <ng-container matColumnDef="nomes_retornados">
       <th mat-header-cell *matHeaderCellDef class="table-dark">
         Nomes Retornados
       </th>
-      <td mat-cell *matCellDef="let element">{{ element.nomeRetornados }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.nomes_retornados }}</td>
     </ng-container>
 
     <ng-container matColumnDef="sinonimo">
@@ -39,25 +39,36 @@
       <td mat-cell *matCellDef="let element">{{ element.sinonimo }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="baseDeDados">
+    <ng-container matColumnDef="base_de_dados">
       <th mat-header-cell *matHeaderCellDef class="table-dark">
         Base de Dados
       </th>
-      <td mat-cell *matCellDef="let element">{{ element.baseDeDados }}</td>
+      <td mat-cell *matCellDef="let element">{{ element.base_de_dados }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="familiaRespectiva">
+    <ng-container matColumnDef="familia_respectiva">
       <th mat-header-cell *matHeaderCellDef class="table-dark">
         Família Respectiva
       </th>
       <td mat-cell *matCellDef="let element">
-        {{ element.familiaRespectiva }}
+        {{ element.familia_respectiva }}
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="headerTable"></tr>
     <tr mat-row *matRowDef="let row; columns: headerTable"></tr>
   </table>
+
+  <mat-paginator
+    #paginator
+    [pageSize]=100
+    [pageSizeOptions]="[100, 200, 500, 1000]"
+    (page)="scroll()"
+    showFirstLastButtons
+    aria-label="Select page of periodic elements"
+  >
+  </mat-paginator>
+</div>
 
   <form>
     <div
@@ -98,9 +109,7 @@
               />
             </div>
 
-            <div class="form-check"
-            *ngIf="confirmation == true"
-            >
+            <div class="form-check" *ngIf="confirmation == true">
               <input
                 type="checkbox"
                 class="form-check-input"
@@ -115,7 +124,7 @@
           </div>
           <div class="modal-footer">
             <button
-              type="button"
+              type="reset"
               class="btn btn-outline-dark"
               data-bs-dismiss="modal"
             >
@@ -125,7 +134,7 @@
               type="button"
               class="btn btn-dark"
               (click)="onUpload()"
-              [disabled]="(confirmation2 == false)"
+              [disabled]="confirmation2 == false"
             >
               Importar
             </button>
@@ -175,4 +184,3 @@
       </div>
     </div>
   </form>
-</div>

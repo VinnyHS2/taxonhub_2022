@@ -1,11 +1,11 @@
 import { Deserializable } from './Deserializable';
 
 export class resultadoTaxonomica implements Deserializable {
-    nomePesquisado: string = '';
-    nomeRetornados: string = '';
+    nome_pesquisado: string = '';
+    nomes_retornados: string = '';
     sinonimo: string = '';
-    baseDeDados: string = '';
-    familiaRespectiva: string = '';
+    base_de_dados: string = '';
+    familia_respectiva: string = '';
 
   deserialize(input: any) {
     Object.assign(this, input);

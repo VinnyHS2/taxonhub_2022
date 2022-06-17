@@ -10,6 +10,7 @@ import { OcorrenciaComponent } from './components/ocorrencia/ocorrencia.componen
 import { TaxonomicaComponent } from './components/taxonomica/taxonomica.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HttpClientModule } from '@angular/common/http';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatTableModule,
+    MatPaginatorModule,
     HttpClientModule
   ],
   providers: [],
