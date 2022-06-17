@@ -4,7 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
+import org.jsoup.select.Evaluator.IsEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.eng.taxonhub.dto.GbifSpeciesDto;
 import com.eng.taxonhub.dto.ListOcurrenceDto;
 import com.eng.taxonhub.dto.OcurrenceDto;
 import com.eng.taxonhub.dto.OcurrenceGbifDto;
+import com.eng.taxonhub.dto.OcurrenceResultGbifDto;
 import com.eng.taxonhub.dto.PathDto;
 import com.eng.taxonhub.model.CsvUpload;
 import com.eng.taxonhub.repository.CsvUploadRepository;
@@ -63,11 +66,21 @@ public class OcurrenceService {
 	public OcurrenceGbifDto getOcurrenceGbif(String key){
 		Mono<OcurrenceGbifDto> ocurrenceGbifDto = this.webClientGbif.get()
 				.uri(uriBuilder -> uriBuilder.path("occurrence/search")
-						.queryParam("taxonKey", key ).build())
+						.queryParam("taxonKey", key)
+						.queryParam("limit", 300)
+						.build())
 				.retrieve().bodyToMono(OcurrenceGbifDto.class);
 		
 		return ocurrenceGbifDto.block();
 		
+	}
+	
+	public OcurrenceGbifDto filtroDadosGbif(OcurrenceGbifDto dto){
+		dto.getResults().stream()
+			.filter(((Predicate<OcurrenceResultGbifDto>)occurrence -> occurrence.getDecimalLatitude() != "")
+				.and(occurrence -> occurrence.getDecimalLongitude() != "")
+				.or(occurrence -> occurrence.getDecimalLatitude() != "0" && occurrence.getDecimalLongitude() != "0"));			
+		return dto;
 	}
 	
 	
@@ -89,8 +102,9 @@ public class OcurrenceService {
 		csvFiltrado.getSpeciesNames().forEach(nome -> {
 			GbifSpeciesDto speciesGbif = this.getKeyGbif(nome.getSpeciesNames());
 			OcurrenceGbifDto ocurrenceGbif = this.getOcurrenceGbif(speciesGbif.getAcceptedUsageKey());
+			OcurrenceGbifDto filtroDadosGbif = this.filtroDadosGbif(ocurrenceGbif);
 			
-			ocurrenceGbif.getResults().forEach(results -> {
+			filtroDadosGbif.getResults().forEach(results -> {
 //		@formatter:off				
 				OcurrenceDto ocurrence = OcurrenceDto.builder()
 						.nomePesquisado(nome.getSpeciesNames())
@@ -117,5 +131,6 @@ public class OcurrenceService {
 		
 	}
 
+	
 
 }
