@@ -86,7 +86,7 @@ class TaxonhubApplicationTests {
 		
 		List<String[]> nomesBinominais = csvReader.readAll();
 		for( String[] nomeBinominal : nomesBinominais) {
-			Assertions.assertTrue(specieRepository.findByName(nomeBinominal[0]).isPresent());
+			Assertions.assertFalse(specieRepository.findByName(nomeBinominal[0]).isEmpty());
 		}
 	}
 	

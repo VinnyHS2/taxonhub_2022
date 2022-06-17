@@ -100,9 +100,12 @@ public class StorageService {
 
 		List<TaxonomicaDto> dto = new ArrayList<TaxonomicaDto>();
 		csvFiltrado.getSpeciesNames().forEach(nome -> {
-			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository.findByScientificName(nome.getSpeciesNames().toLowerCase());
-			resultado.forEach(information -> {
-				if(information.getAcceptedNameUsageID().isEmpty()) {
+			List<TheWorldFloraInformation> resultado = theWorldFloraInformationRepository
+					.findByScientificName(nome.getSpeciesNames().toLowerCase());
+			if (!resultado.isEmpty()) {
+				TheWorldFloraInformation information = resultado.get(0);
+				if (information.getAcceptedNameUsageID().isEmpty()) {
+//				@formatter:off
 					TaxonomicaDto informationDto = TaxonomicaDto.builder()
 							.baseDeDados("The World Flora Online")
 							.familiaRespectiva(information.getFamily())
@@ -112,7 +115,28 @@ public class StorageService {
 							.autor(information.getScientificNameAuthorship())
 							.build();	
 					dto.add(informationDto);
-				}else {
+//					@formatter:on
+					List<TheWorldFloraInformation> sinonimos = theWorldFloraInformationRepository
+							.findByAcceptedNameUsageId(information.getTaxonID());
+					sinonimos.forEach(sinonimo -> {
+//						@formatter:off
+
+						TaxonomicaDto informationDto2 = TaxonomicaDto.builder()
+								.baseDeDados("The World Flora Online")
+								.familiaRespectiva(sinonimo.getFamily())
+								.nomePesquisado(nome.getSpeciesNames())
+								.nomesRetornados(sinonimo.getScientificName())
+								.sinonimo(sinonimo.getTaxonomicStatus())
+								.autor(sinonimo.getScientificNameAuthorship())
+								.build();
+						dto.add(informationDto2);
+//					@formatter:on
+
+					});
+
+				} else {
+//					@formatter:off
+
 					Optional<TheWorldFloraInformation> acceptedName = theWorldFloraInformationRepository.findByTaxonID(information.getAcceptedNameUsageID());
 					TheWorldFloraInformation acceptedName1 = acceptedName.get();
 					TaxonomicaDto informationDto1 = TaxonomicaDto.builder()
@@ -124,9 +148,13 @@ public class StorageService {
 							.autor(acceptedName1.getScientificNameAuthorship())
 							.build();
 					dto.add(informationDto1);
-					List<TheWorldFloraInformation> sinonimos = theWorldFloraInformationRepository.findByAcceptedNameUsageId(acceptedName.get().getTaxonID());
+//					@formatter:on
+
+					List<TheWorldFloraInformation> sinonimos = theWorldFloraInformationRepository
+							.findByAcceptedNameUsageId(acceptedName.get().getTaxonID());
 					sinonimos.forEach(sinonimo -> {
-//				@formatter:off
+//						@formatter:off
+
 						TaxonomicaDto informationDto2 = TaxonomicaDto.builder()
 								.baseDeDados("The World Flora Online")
 								.familiaRespectiva(sinonimo.getFamily())
@@ -136,18 +164,17 @@ public class StorageService {
 								.autor(sinonimo.getScientificNameAuthorship())
 								.build();
 						dto.add(informationDto2);
+//					@formatter:on
+
 					});
-//				@formatter:on
 				}
-				
-			});
+
+			}
 		});
-		ListTaxonomicaDto response = ListTaxonomicaDto.builder()
-				.resultados(dto)
-				.build();
-		
+		ListTaxonomicaDto response = ListTaxonomicaDto.builder().resultados(dto).build();
+
 		return response;
-		
+
 	}
 
 	public boolean extensaoCsv(MultipartFile file) throws Exception {

@@ -28,12 +28,19 @@ public interface TheWorldFloraInformationRepository extends JpaRepository<TheWor
 	
 	@Query(nativeQuery = true, value = "SELECT * "
 			+ " FROM the_world_flora_information wfo "
-			+ " WHERE wfo.scientific_name LIKE %:name% ")
+			+ " WHERE wfo.scientific_name LIKE %:name% "
+			+ " AND wfo.scientific_name_authorship != '' "
+			+ " AND wfo.family != '' "
+			+ " AND wfo.taxonomic_status != '' ")
 	List<TheWorldFloraInformation> findByScientificName(@Param("name") String name);
 	
 	@Query(nativeQuery = true, value = "SELECT * "
 			+ " FROM the_world_flora_information wfo "
-			+ " WHERE wfo.accepted_name_usage_id = :taxonId ")
+			+ " WHERE wfo.accepted_name_usage_id = :taxonId "
+			+ " AND wfo.scientific_name_authorship != '' "
+			+ " AND wfo.scientific_name != '' "
+			+ " AND wfo.family != '' "
+			+ " AND wfo.taxonomic_status != '' ")
 	List<TheWorldFloraInformation> findByAcceptedNameUsageId(@Param("taxonId") String taxonId);
 	
 	
