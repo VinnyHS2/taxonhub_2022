@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jsoup.select.Evaluator.IsEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,10 +77,12 @@ public class OcurrenceService {
 	}
 	
 	public OcurrenceGbifDto filtroDadosGbif(OcurrenceGbifDto dto){
-		dto.getResults().stream()
-			.filter(((Predicate<OcurrenceResultGbifDto>)occurrence -> occurrence.getDecimalLatitude() != "")
-				.and(occurrence -> occurrence.getDecimalLongitude() != "")
-				.or(occurrence -> occurrence.getDecimalLatitude() != "0" && occurrence.getDecimalLongitude() != "0"));			
+		
+		dto.setResults(dto.getResults().stream()
+			.filter(occurrence -> occurrence.getDecimalLatitude() != null)
+			.filter(occurrence -> occurrence.getDecimalLongitude() != null)
+			.filter(occurrence -> occurrence.getDecimalLatitude() != "0" && occurrence.getDecimalLongitude() != "0")
+			.collect(Collectors.toList()));			
 		return dto;
 	}
 	
