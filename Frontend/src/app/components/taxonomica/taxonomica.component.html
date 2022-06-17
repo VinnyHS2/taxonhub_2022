@@ -5,6 +5,7 @@
       class="btn btn-outline-dark"
       data-bs-toggle="modal"
       data-bs-target="#exampleModal"
+      (click)="close()"
     >
       Importar Arquivo Csv
     </button>
@@ -58,48 +59,120 @@
     <tr mat-row *matRowDef="let row; columns: headerTable"></tr>
   </table>
 
-  <div
-    class="modal fade"
-    id="exampleModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">
-            Importar Arquivo Csv
-          </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="formFile" class="form-label">Selecione o Arquivo</label>
-            <input
-              class="form-control"
-              type="file"
-              id="formFile"
-              accept=".csv"
-            />
+  <form>
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" [ngClass]="{ off: step != 1 }">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Importar Arquivo Csv
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              (click)="close()"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="formFile" class="form-label"
+                >Selecione o Arquivo</label
+              >
+              <input
+                class="form-control"
+                type="file"
+                id="formFile"
+                accept=".csv"
+                (change)="changeListener($event)"
+                #fileUpload
+              />
+            </div>
+
+            <div class="form-check"
+            *ngIf="confirmation == true"
+            >
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="exampleCheck1"
+                [checked]="confirmation2"
+                (change)="confirmation2 = !confirmation2"
+              />
+              <label class="form-check-label" for="exampleCheck1"
+                >Estou ciente que minhas buscas anteriores serão perdidas</label
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn btn-dark"
+              (click)="onUpload()"
+              [disabled]="(confirmation2 == false)"
+            >
+              Importar
+            </button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            data-bs-dismiss="modal"
-          >
-            Cancelar
-          </button>
-          <button type="button" class="btn btn-dark">Importar</button>
+
+        <div class="modal-content" [ngClass]="{ off: step != 2 }">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">
+              Importar Arquivo Csv
+            </h5>
+            <button
+              type="reset"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+              (click)="close()"
+              [disabled]="loading"
+            ></button>
+          </div>
+          <div class="modal-body align-self-center">
+            <div class="row justify-content-center">
+              <div
+                class="spinner-border"
+                role="status"
+                [ngClass]="{ off: !loading }"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <span class="row">
+              {{ message }}
+            </span>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="reset"
+              class="btn btn-outline-dark"
+              data-bs-dismiss="modal"
+              (click)="close()"
+              [disabled]="loading"
+            >
+              Fechar
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </div>
