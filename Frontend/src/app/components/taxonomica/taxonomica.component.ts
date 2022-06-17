@@ -82,6 +82,9 @@ export class TaxonomicaComponent implements OnInit {
         }, 2000);
       },
       () => {
+        this.loading = true;
+        this.message = 'Enviando Arquivo!';
+        this.step = 2;
         setTimeout(() => {
           this.message = "Arquivo enviado com sucesso!";
           this.loading = false;
