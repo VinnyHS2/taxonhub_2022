@@ -26,7 +26,6 @@ import com.eng.taxonhub.model.TheWorldFloraInformation;
 import com.eng.taxonhub.repository.TheWorldFloraInformationRepository;
 import com.eng.taxonhub.service.StorageService;
 import com.google.gson.FieldNamingPolicy;
-import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -79,10 +78,46 @@ public class TaxonhubStorageServiceTest {
 
 		worldFloraInformationRepository.delete(newData.get());
 	}
+	@Test
+	@Order(6)
+	public void insertOnDataBaseIncompleto() throws Exception {
+		this.storageService.insertOnDataBase("files/fileTestInsertIncompleto.txt");
+		Optional<TheWorldFloraInformation> newData = worldFloraInformationRepository.findByTaxonID("pato2");
+		Assertions.assertTrue(newData.isPresent());
+		Assertions.assertTrue(newData.get().getScientificNameID().equals("urn:lsid:ipni.org:names:195146-1"));
+		Assertions.assertTrue(newData.get().getLocalID().equals("GCC-FA54B065-8C1D-48CC-8CE0-000012FB41F0"));
+		Assertions.assertTrue(newData.get().getScientificName().equals(""));
+		Assertions.assertTrue(newData.get().getTaxonRank().equals(""));
+		Assertions.assertTrue(newData.get().getParentNameUsageID().equals(""));
+		Assertions.assertTrue(newData.get().getScientificNameAuthorship().equals(""));
+		Assertions.assertTrue(newData.get().getFamily().equals(""));
+		Assertions.assertTrue(newData.get().getSubfamily().equals(""));
+		Assertions.assertTrue(newData.get().getTribe().equals(""));
+		Assertions.assertTrue(newData.get().getSubtribe().equals(""));
+		Assertions.assertTrue(newData.get().getGenus().equals(""));
+		Assertions.assertTrue(newData.get().getSubgenus().equals(""));
+		Assertions.assertTrue(newData.get().getSpecificEpithet().equals(""));
+		Assertions.assertTrue(newData.get().getInfraspecificEpithet().equals(""));
+		Assertions.assertTrue(newData.get().getVerbatimTaxonRank().equals(""));
+		Assertions.assertTrue(newData.get().getNomenclaturalStatus().equals(""));
+		Assertions.assertTrue(newData.get().getNamePublishedIn().equals(""));
+		Assertions.assertTrue(newData.get().getTaxonomicStatus().equals(""));
+		Assertions.assertTrue(newData.get().getAcceptedNameUsageID().equals(""));
+		Assertions.assertTrue(newData.get().getOriginalNameUsageID().equals(""));
+		Assertions.assertTrue(newData.get().getNameAccordingToID().equals(""));
+		Assertions.assertTrue(newData.get().getCreated().equals(""));
+		Assertions.assertTrue(newData.get().getModified().equals(""));
+		Assertions.assertTrue(newData.get().getSource().equals(""));
+		Assertions.assertTrue(newData.get().getMajorGroup().equals(""));
+		Assertions.assertTrue(newData.get().getTplId().equals(""));
+		Assertions.assertTrue(newData.get().getReferences().equals(""));
+		
+		worldFloraInformationRepository.delete(newData.get());
+	}
 
 	@Test
 	@Order(1)
-	public void buscaTaxonomicaComUmNomeValido() throws Exception {
+	public void buscaTaxonomicaComUmNomeCientificoAceito() throws Exception {
 		File file = new File("./files/Lista-teste-um-nome-valido.csv");
 		FileInputStream input = new FileInputStream(file);
 		MockMultipartFile file2 = new MockMultipartFile("file", file.getName(), MediaType.TEXT_PLAIN_VALUE,
@@ -106,7 +141,7 @@ public class TaxonhubStorageServiceTest {
         		.autor("(Rataj) Christenh. & Byng")
         		.baseDeDados("The World Flora Online")
         		.familiaRespectiva("alismataceae")
-        		.nomePesquisado("Echinodorus cylindricus")
+        		.nomePesquisado("Aquarius cylindricus")
         		.nomesRetornados("aquarius cylindricus")
         		.sinonimo("ACCEPTED")
         		.build();
@@ -114,12 +149,55 @@ public class TaxonhubStorageServiceTest {
         		.autor("Rataj")
         		.baseDeDados("The World Flora Online")
         		.familiaRespectiva("alismataceae")
-        		.nomePesquisado("Echinodorus cylindricus")
+        		.nomePesquisado("Aquarius cylindricus")
         		.nomesRetornados("echinodorus cylindricus")
         		.sinonimo("SYNONYM")
         		.build();
         Assertions.assertEquals(dto, dtoEsperado);
         Assertions.assertEquals(dto1, dtoEsperado1);
+		
+	}
+	
+	@Test
+	@Order(5)
+	public void buscaTaxonomicaComUmNomeCientificoSinonimo() throws Exception {
+		File file = new File("./files/Lista-teste-um-nome-valido-sinonimo.csv");
+		FileInputStream input = new FileInputStream(file);
+		MockMultipartFile file2 = new MockMultipartFile("file", file.getName(), MediaType.TEXT_PLAIN_VALUE,
+				IOUtils.toByteArray(input));
+		input.close();
+		
+		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.multipart("/file/taxonomica").file(file2))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.resultados").exists())
+				.andReturn();
+		
+		String responseBody = result.getResponse().getContentAsString();
+		Gson gson = new GsonBuilder()
+				.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+				.create();
+		ListTaxonomicaDto responseDto
+		= gson.fromJson(responseBody, ListTaxonomicaDto.class);
+		TaxonomicaDto dto = responseDto.getResultados().get(0);
+		TaxonomicaDto dto1 = responseDto.getResultados().get(1);
+		TaxonomicaDto dtoEsperado = TaxonomicaDto.builder()
+				.autor("(Rataj) Christenh. & Byng")
+				.baseDeDados("The World Flora Online")
+				.familiaRespectiva("alismataceae")
+				.nomePesquisado("Echinodorus cylindricus")
+				.nomesRetornados("aquarius cylindricus")
+				.sinonimo("ACCEPTED")
+				.build();
+		TaxonomicaDto dtoEsperado1 = TaxonomicaDto.builder()
+				.autor("Rataj")
+				.baseDeDados("The World Flora Online")
+				.familiaRespectiva("alismataceae")
+				.nomePesquisado("Echinodorus cylindricus")
+				.nomesRetornados("echinodorus cylindricus")
+				.sinonimo("SYNONYM")
+				.build();
+		Assertions.assertEquals(dto, dtoEsperado);
+		Assertions.assertEquals(dto1, dtoEsperado1);
 		
 	}
 	
