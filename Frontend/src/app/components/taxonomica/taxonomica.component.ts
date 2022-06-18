@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { resultadoTaxonomica } from 'src/app/model/resultadoTaxonomica';
+import { ExportCsvService } from 'src/app/service/export-csv.service';
+import { NotificationService } from 'src/app/service/notificacation.service';
 import { TaxonomicaService } from 'src/app/service/taxonomica.service';
 
 /*nomePesquisado
@@ -30,7 +32,12 @@ export class TaxonomicaComponent implements OnInit {
   @ViewChild('fileUpload') fileUpload: any;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
 
-  constructor(private taxonomicaService: TaxonomicaService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private taxonomicaService: TaxonomicaService,
+    private cdr: ChangeDetectorRef,
+    private exportCsvService: ExportCsvService,
+    private notificationService: NotificationService
+    ) {}
 
   headerTable = [
     'nome_pesquisado',
@@ -82,6 +89,7 @@ export class TaxonomicaComponent implements OnInit {
         this.lenght = res.resultados.length
         this.resultadoTaxonomica = new MatTableDataSource<resultadoTaxonomica>(res.resultados);
         this.resultadoTaxonomica.paginator = this.paginator;
+        console.log(this.resultadoTaxonomica);
       },
       (err: any) => {
         setTimeout(() => {
@@ -112,4 +120,16 @@ export class TaxonomicaComponent implements OnInit {
       this.confirmation2 = true;
     }
   }
+
+  downloadCsv(){
+
+    if(this.resultadoTaxonomica.filteredData && this.resultadoTaxonomica.filteredData.length > 0){
+      this.exportCsvService.downloadFile(this.resultadoTaxonomica.filteredData);
+    }else{
+      this.notificationService.showError(
+        ' Erro ao exportar arquivo.'
+      );
+    }
+  }
+
 }
