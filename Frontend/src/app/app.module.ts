@@ -9,6 +9,8 @@ import { NavComponent } from './components/nav/nav.component';
 import { OcorrenciaComponent } from './components/ocorrencia/ocorrencia.component';
 import { TaxonomicaComponent } from './components/taxonomica/taxonomica.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { HttpClientModule } from '@angular/common/http';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MatTableModule
+    MatTableModule,
+    MatPaginatorModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
