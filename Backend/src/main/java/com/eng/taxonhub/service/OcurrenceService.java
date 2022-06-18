@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.jsoup.select.Evaluator.IsEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -85,7 +84,7 @@ public class OcurrenceService {
 			.collect(Collectors.toList()));			
 		return dto;
 	}
-	
+
 	
 	
 	public ListOcurrenceDto buscaOcorrencia(MultipartFile file) throws Exception {
@@ -108,6 +107,7 @@ public class OcurrenceService {
 			OcurrenceGbifDto filtroDadosGbif = this.filtroDadosGbif(ocurrenceGbif);
 			
 			filtroDadosGbif.getResults().forEach(results -> {
+        
 //		@formatter:off				
 				OcurrenceDto ocurrence = OcurrenceDto.builder()
 						.nomePesquisado(nome.getSpeciesNames())
@@ -133,7 +133,5 @@ public class OcurrenceService {
 		return response;
 		
 	}
-
-	
 
 }
