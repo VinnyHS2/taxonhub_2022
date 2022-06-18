@@ -11,6 +11,9 @@ import { TaxonomicaComponent } from './components/taxonomica/taxonomica.componen
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSliderModule } from '@angular/material/slider';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +29,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     BrowserAnimationsModule,
     MatTableModule,
     MatPaginatorModule,
-    HttpClientModule
+    HttpClientModule,
+    MatSnackBarModule,
+    MatSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]
